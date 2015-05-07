@@ -1,16 +1,14 @@
 package org.template.classification
 
-import io.prediction.controller.PDataSource
+import grizzled.slf4j.Logger
 import io.prediction.controller.EmptyEvaluationInfo
+import io.prediction.controller.PDataSource
 import io.prediction.controller.Params
 import io.prediction.data.store.PEventStore
-
 import org.apache.spark.SparkContext
-import org.apache.spark.rdd.RDD
-import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.linalg.Vectors
-
-import grizzled.slf4j.Logger
+import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.rdd.RDD
 
 case class DataSourceParams(
   appName: String,
@@ -26,6 +24,7 @@ class DataSource(val dsp: DataSourceParams)
   override
   def readTraining(sc: SparkContext): TrainingData = {
 
+    /*
     val labeledPoints: RDD[LabeledPoint] = PEventStore.aggregateProperties(
       appName = dsp.appName,
       entityType = "user",
@@ -49,7 +48,12 @@ class DataSource(val dsp: DataSourceParams)
             throw e
           }
         }
-      }.cache()
+      }.cache()*/
+    val labeledPoints = sc.parallelize(Seq(
+      LabeledPoint(1.0, Vectors.dense(0.0, 1.1, 0.1)),
+      LabeledPoint(0.0, Vectors.dense(2.0, 1.0, -1.0)),
+      LabeledPoint(0.0, Vectors.dense(2.0, 1.3, 1.0)),
+      LabeledPoint(1.0, Vectors.dense(0.0, 1.2, -0.5))))
 
     new TrainingData(labeledPoints)
   }
